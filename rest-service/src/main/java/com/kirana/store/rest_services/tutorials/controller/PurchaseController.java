@@ -30,7 +30,7 @@ public class PurchaseController {
     PurchaseRepository purchaseRepository;
 
     @Autowired
-    com.kirana.store.rest_services.tutorials.service.PurchaseService purchaseService;
+    PurchaseService purchaseService;
 
     @PostMapping("/purchase/add")
     public ResponseEntity<Object> persistAPurchase(
