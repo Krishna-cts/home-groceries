@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.kirana.store</groupId>
-    <artifactId>rest-serviceW</artifactId>
+    <artifactId>home-groceries-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>rest-services</name>
+    <name>home-groceries-backend</name>
     <description>Kirana Project</description>
     <url/>
     <licenses>
