@@ -108,7 +108,8 @@ function Dashboard() {
     };
 
     const fetchFiltered = async () => {
-        const token = sessionStorage.getItem("token");
+        const token =          await getToken();
+
         let url = "http://localhost:8080/purchase/filter?";
         if (product) url += `product=${product}&`;
         if (range) url += `range=${range}&`;
@@ -157,7 +158,7 @@ function Dashboard() {
     const fetchPurchases = async () => {
         try {
             const token = await getToken();
-            const res = await axios.get("http://localhost:8080/purchase/fetchall", {
+            const res = await axios.get("http://localhost:8080/purchase/fetchAll", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setPurchases(res.data);
@@ -236,12 +237,14 @@ function Dashboard() {
             <input type="checkbox" checked={cheapest} onChange={(e) => setCheapest(e.target.checked)} />
             Cheapest
         </label>
+        <div>
 
         <button onClick={fetchFiltered}>Apply</button>
         <button onClick={handleReset}>Reset</button>
         <button onClick={fetchPurchases}>Refresh</button>
         <button onClick={toggleEditMode}>{editMode ? "Done" : "Edit"}</button>
         {editMode && <button onClick={handleDeleteSelected}>Delete Selected</button>}
+        </div>
     </div>
 
     {
@@ -275,11 +278,11 @@ function Dashboard() {
                         onMouseEnter={(e) => e.currentTarget.style.background = "#f5f7fa"}
                         onMouseLeave={(e) => e.currentTarget.style.background = "white"}
                     >
-                        {/* {editMode && (
+                         {editMode && (
                             <td>
-                                <input type="checkbox" checked={selectedPurchases.includes(p)} onChange={() => handleSelectPurchase(p)} />
+                                <input type="checkbox" checked={selectedRows.includes(p)} onChange={() => handleRowSelection(p)} />
                             </td>
-                        )} */}
+                        )} 
                         <td>{p.productName}</td>
                         <td>{p.purchaseDate ? new Date(p.purchaseDate).toLocaleDateString() : ""}</td>
                         <td>₹{p.cost}</td>
