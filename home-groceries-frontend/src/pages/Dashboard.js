@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { signOut, deleteUser, fetchAuthSession } from "aws-amplify/auth";
 import axios from "axios";
 import styles from "../styles";
+import { getCurrentUser } from "aws-amplify/auth";
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ function Dashboard() {
     const [cost, setCost] = useState("");
     const [quantity, setQuantity] = useState("");
     const [paymentMode, setPaymentMode] = useState("");
-    const [purchasedBy, setPurchasedBy] = useState("");
+    let [purchasedBy, setPurchasedBy] = useState("");
     const [sortField, setSortField] = useState("");
     const [sortOrder, setSortOrder] = useState("asc");
     const [editMode, setEditMode] = useState(false);
@@ -25,6 +26,7 @@ function Dashboard() {
     const [toDate, setToDate] = useState("");
     const [cheapest, setCheapest] = useState(false);
     const [purchases, setPurchases] = useState([]);
+    const [loggedInUser, setLoggedInUser] = useState("");
 
     const totalSpend = purchases.reduce((sum, p) => sum + p.cost, 0);
 
@@ -124,7 +126,8 @@ function Dashboard() {
             setPurchases(res.data);
         } catch (error) {
             console.error(error);
-            alert("Failed to fetch filtered data");
+            alert(JSON.stringify(error.response?.data));
+
         }
     };
 
@@ -168,6 +171,12 @@ function Dashboard() {
     };
 
     const addPurchase = async () => {
+
+         purchasedBy =
+    purchasedBy.trim() === ""
+        ? loggedInUser
+        : purchasedBy;
+        
         try {
             const token = await getToken();
             await axios.post(
@@ -185,12 +194,21 @@ function Dashboard() {
             setPurchasedBy("");
             fetchPurchases();
         } catch (error) {
-            console.error(error);
+          console.error("Error Response:", error.response);
+console.error("Error Data:", error.response?.data);
             alert(error.response?.data || "❌ Failed to add purchase");
         }
     };
 
     useEffect(() => {
+
+            const loadUser = async () => {
+        const user = await getCurrentUser();
+        setLoggedInUser(user.username);
+    };
+
+    loadUser();
+
         fetchPurchases();
         if (performance.getEntriesByType("navigation")[0]?.type === "reload") {
             sessionStorage.clear();
@@ -268,6 +286,16 @@ function Dashboard() {
                     <th style={getHeaderStyle("quantity")} onClick={() => handleSort("quantity")}>
                         Quantity {sortField === "quantity" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
                     </th>
+                     <th style={getHeaderStyle("vendor")} onClick={() => handleSort("vendor")}>
+                        Vendor {sortField === "vendor" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                    </th>       
+                    <th style={getHeaderStyle("paymentMode")} onClick={() => handleSort("paymentMode")}>
+                        Payment Mode {sortField === "paymentMode" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                    </th>       
+                    <th style={getHeaderStyle("purchasedBy")} onClick={() => handleSort("purchasedBy")}>
+                        Purchased By {sortField === "purchasedBy" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                    </th>
+
                 </tr>
             </thead>
             <tbody>
@@ -287,6 +315,9 @@ function Dashboard() {
                         <td>{p.purchaseDate ? new Date(p.purchaseDate).toLocaleDateString() : ""}</td>
                         <td>₹{p.cost}</td>
                         <td>{p.quantity}</td>
+                        <td>{p.vendor}</td>
+                        <td>{p.paymentMode}</td>
+                        <td>{p.purchasedBy}</td>
                     </tr>
                 ))}
             </tbody>
