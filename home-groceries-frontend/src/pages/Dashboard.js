@@ -27,6 +27,8 @@ function Dashboard() {
     const [cheapest, setCheapest] = useState(false);
     const [purchases, setPurchases] = useState([]);
     const [loggedInUser, setLoggedInUser] = useState("");
+    const [selectedPurchase, setSelectedPurchase] = useState(null);
+const [showEditModal, setShowEditModal] = useState(false);
 
     const totalSpend = purchases.reduce((sum, p) => sum + p.cost, 0);
 
@@ -295,6 +297,7 @@ console.error("Error Data:", error.response?.data);
                     <th style={getHeaderStyle("purchasedBy")} onClick={() => handleSort("purchasedBy")}>
                         Purchased By {sortField === "purchasedBy" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
                     </th>
+<th>Action</th>
 
                 </tr>
             </thead>
@@ -318,12 +321,131 @@ console.error("Error Data:", error.response?.data);
                         <td>{p.vendor}</td>
                         <td>{p.paymentMode}</td>
                         <td>{p.purchasedBy}</td>
+                        <td>
+    <button
+        onClick={() => {
+            setSelectedPurchase({ ...p });
+            setShowEditModal(true);
+        }}
+    >
+        Edit
+    </button>
+</td>
                     </tr>
                 ))}
             </tbody>
 </table>
 
 )}
+
+{
+    showEditModal && (
+        <div
+    style={{
+    width: "100%",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    marginTop: "5px"
+}}
+>
+            <h3>Edit Purchase</h3>
+
+          <div style={{ marginBottom: "15px" }}>
+    <label>Product Name</label>
+
+    <input
+        style={styles.input}
+        value={selectedPurchase?.productName || ""}
+        onChange={(e) =>
+            setSelectedPurchase({
+                ...selectedPurchase,
+                productName: e.target.value
+            })
+        }
+    />
+</div><div style={{ marginBottom: "15px" }}>
+    <label>Vendor</label>
+
+    <input
+        style={styles.input}
+        value={selectedPurchase?.vendor || ""}
+        onChange={(e) =>
+            setSelectedPurchase({
+                ...selectedPurchase,
+                vendor: e.target.value
+            })
+        }
+    />
+</div>
+
+<div style={{ marginBottom: "15px" }}>
+    <label>Cost</label>
+    <input
+        style={styles.input}
+        value={selectedPurchase?.cost || ""}
+        onChange={(e) =>
+            setSelectedPurchase({
+            ...selectedPurchase,
+            cost: e.target.value
+        })
+    }
+/>
+</div>
+
+<div style={{ marginBottom: "15px" }}>
+    <label>Quantity</label>
+    <input
+        style={styles.input}
+        value={selectedPurchase?.quantity || ""}
+    onChange={(e) =>
+        setSelectedPurchase({
+            ...selectedPurchase,
+            quantity: e.target.value
+        })
+    }
+/>
+</div>
+
+<div style={{ marginBottom: "15px" }}>
+    <label>Payment Mode</label>
+    <input
+    style={styles.input}
+    value={selectedPurchase?.paymentMode || ""}
+    onChange={(e) =>
+        setSelectedPurchase({
+            ...selectedPurchase,
+            paymentMode: e.target.value
+        })
+    }
+/>
+</div>
+
+<div style={{ marginBottom: "15px" }}>
+    <label>Purchased By</label>
+    <input
+        style={styles.input}
+        value={selectedPurchase?.purchasedBy || ""}
+        onChange={(e) =>
+            setSelectedPurchase({
+            ...selectedPurchase,
+            purchasedBy: e.target.value
+        })
+    }
+/>
+</div>
+<br/>
+
+
+            <button
+                onClick={() => setShowEditModal(false)}
+            >
+                Close
+            </button>
+        </div>
+    )
+}
+
 </div>
 </div>
 
