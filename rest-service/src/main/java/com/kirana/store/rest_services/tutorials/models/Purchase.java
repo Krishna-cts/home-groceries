@@ -17,7 +17,6 @@ public class Purchase implements Comparable<Purchase> {
 
     @Getter
     @Setter
-    @JsonIgnore
     @Id
     @GeneratedValue
     private int purchaseId;

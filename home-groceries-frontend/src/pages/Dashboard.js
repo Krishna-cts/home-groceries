@@ -171,8 +171,27 @@ const [showEditModal, setShowEditModal] = useState(false);
             console.error(error);
         }
     };
+const updatePurchase = async () => {
+    try {
+        const token = await getToken(); 
 
-    const addPurchase = async () => {
+
+        await axios.put(
+            `http://localhost:8080/purchase/update`,
+            selectedPurchase,
+            { headers: { Authorization: `Bearer ${token}` } }
+        );
+        alert("✅ Purchase updated successfully");
+        setShowEditModal(false);
+        fetchPurchases();
+    } catch (error) {
+        console.error("Error Response:", error.response);
+        console.error("Error Data:", error.response?.data);
+        alert(error.response?.data || "❌ Failed to update purchase");
+    }
+};
+
+const addPurchase = async () => {
 
          purchasedBy =
     purchasedBy.trim() === ""
@@ -276,6 +295,9 @@ console.error("Error Data:", error.response?.data);
                 <tr>
 
                     {editMode && <th>Select</th>}
+                    <th style={getHeaderStyle("purchaseId")} onClick={() => handleSort("purchaseId")}>
+                        Purchase Id {sortField === "purchaseId" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
+                    </th>
                     <th style={getHeaderStyle("productName")} onClick={() => handleSort("productName")}>
                         Product {sortField === "productName" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
                     </th>
@@ -297,7 +319,9 @@ console.error("Error Data:", error.response?.data);
                     <th style={getHeaderStyle("purchasedBy")} onClick={() => handleSort("purchasedBy")}>
                         Purchased By {sortField === "purchasedBy" ? (sortOrder === "asc" ? "▲" : "▼") : ""}
                     </th>
+                     {editMode && (
 <th>Action</th>
+                     )}
 
                 </tr>
             </thead>
@@ -314,6 +338,7 @@ console.error("Error Data:", error.response?.data);
                                 <input type="checkbox" checked={selectedRows.includes(p)} onChange={() => handleRowSelection(p)} />
                             </td>
                         )} 
+                        <td>{p.purchaseId}</td>
                         <td>{p.productName}</td>
                         <td>{p.purchaseDate ? new Date(p.purchaseDate).toLocaleDateString() : ""}</td>
                         <td>₹{p.cost}</td>
@@ -321,7 +346,9 @@ console.error("Error Data:", error.response?.data);
                         <td>{p.vendor}</td>
                         <td>{p.paymentMode}</td>
                         <td>{p.purchasedBy}</td>
+                        {editMode && (
                         <td>
+                            
     <button
         onClick={() => {
             setSelectedPurchase({ ...p });
@@ -330,7 +357,9 @@ console.error("Error Data:", error.response?.data);
     >
         Edit
     </button>
-</td>
+    
+</td>)
+}
                     </tr>
                 ))}
             </tbody>
@@ -440,7 +469,12 @@ console.error("Error Data:", error.response?.data);
             <button
                 onClick={() => setShowEditModal(false)}
             >
-                Close
+                Cancel
+            </button>
+             <button
+                onClick={updatePurchase}
+            >
+                Submit
             </button>
         </div>
     )

@@ -128,20 +128,7 @@ public class PurchaseController {
             @Valid @RequestBody Purchase purchase
     ) {
 
-        Optional<Purchase> purchase5 =
-                purchaseRepository.findByProductNameAndVendorAndDate(
-                        purchase.getProductName(),
-                        purchase.getVendor(),
-                        purchase.getDate()
-                );
-
-        if (purchase5.isPresent()) {
-            Purchase existing = purchase5.get();
-
-            existing.setCost(purchase.getCost());
-
-            purchaseRepository.save(existing);
-        }
+        purchaseRepository.save(purchase);
 
         return ResponseEntity.created(null).build();
     }
