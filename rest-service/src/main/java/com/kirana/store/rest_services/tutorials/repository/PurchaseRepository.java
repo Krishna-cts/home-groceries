@@ -15,6 +15,7 @@ public interface PurchaseRepository
             String vendor,
             LocalDate date
     );
+    Optional<Purchase> findByPurchaseId(int purchaseId);
 
     List<Purchase> findByProductName(
             String productName
